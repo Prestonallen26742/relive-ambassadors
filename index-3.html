@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <title>Ambassador program · Relive Health Ada</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sign in -->
+  <main id="login" class="login">
+    <form id="login-form" class="login-card">
+      <p class="brand">Relive Health Ada</p>
+      <h1 class="login-title">Ambassador program</h1>
+      <p class="login-sub">Staff sign-in</p>
+      <label class="field">Passcode
+        <input class="input" type="password" name="passcode" autocomplete="current-password" required autofocus>
+      </label>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="error" id="login-error" hidden></p>
+    </form>
+  </main>
+
+  <!-- App -->
+  <div id="app" hidden>
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="hero-bar">
+          <p class="brand">Relive Health Ada <span class="brand-sub">Ambassador program</span></p>
+          <div class="hero-actions">
+            <span class="synced" id="synced"></span>
+            <button class="btn-quiet" type="button" id="refresh">Refresh</button>
+            <button class="btn-quiet" type="button" id="signout">Sign out</button>
+          </div>
+        </div>
+
+        <div class="hero-main">
+          <div class="goal">
+            <h1 class="goal-count"><span id="k-rec">—</span><span class="goal-of">of 500</span></h1>
+            <p class="goal-label">recurring members from ambassadors, <span id="t-pct">—</span> of the goal</p>
+            <div class="goal-grid" id="goal-grid" role="img" aria-label="Progress toward 500 recurring members"></div>
+            <p class="goal-key">Each cell is 10 members</p>
+          </div>
+
+          <dl class="stats">
+            <div class="stat"><dt>Active ambassadors</dt><dd id="k-active">—</dd></div>
+            <div class="stat"><dt>Leads this month</dt><dd id="k-month">—</dd></div>
+            <div class="stat"><dt>Lead to recurring</dt><dd id="k-conv">—</dd></div>
+            <div class="stat"><dt>Credits owed</dt><dd id="k-owed">—</dd></div>
+            <div class="stat"><dt>Credits accruing each month</dt><dd id="k-permonth">—</dd></div>
+            <div class="stat"><dt>Leads all time</dt><dd id="t-leads">—</dd></div>
+          </dl>
+        </div>
+      </div>
+    </header>
+
+    <div class="page">
+      <p class="error banner" id="app-error" hidden></p>
+
+      <div class="layout">
+        <div class="main-col">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="h2">Leaderboard</h2>
+                <p class="sub">Ranked by current recurring members, then leads. <span id="t-active">—</span> ambassadors are onboarded or active.</p>
+              </div>
+              <input class="input search" type="search" id="board-search" placeholder="Search ambassadors" aria-label="Search ambassadors">
+            </div>
+            <div class="tablewrap">
+              <table class="table board">
+                <thead><tr>
+                  <th class="rank">#</th><th>Ambassador</th><th>Status</th>
+                  <th class="num">Leads</th><th class="num">Labs</th><th class="num">Recurring</th><th class="num">Conv.</th>
+                  <th>Tier</th><th class="num">Earned</th><th class="num">Owed</th><th></th>
+                </tr></thead>
+                <tbody id="board-rows"></tbody>
+              </table>
+            </div>
+            <p class="empty" id="board-empty" hidden>No ambassadors yet. Add your first one with Quick add.</p>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="h2">Leads</h2>
+                <p class="sub">Newest first. Change the stage as each person moves along. Keep clinical details in your medical records.</p>
+              </div>
+              <div class="filters">
+                <select class="input" id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option></select>
+                <select class="input amb-select-filter" id="amb-filter" aria-label="Filter by ambassador"><option value="">All ambassadors</option></select>
+              </div>
+            </div>
+            <div class="tablewrap">
+              <table class="table">
+                <thead><tr>
+                  <th>Lead</th><th>Referred by</th><th>Date</th><th>Interested in</th><th>Stage</th><th>Recurring since</th><th></th>
+                </tr></thead>
+                <tbody id="lead-rows"></tbody>
+              </table>
+            </div>
+            <button class="show-more" type="button" id="leads-more" hidden></button>
+            <p class="empty" id="leads-empty" hidden>No leads yet. Log one with Quick add when an ambassador sends someone in.</p>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="h2">Leads by week</h2>
+                <p class="legend"><span><i class="swatch s0"></i>Leads referred</span><span><i class="swatch s1"></i>Now recurring</span></p>
+              </div>
+            </div>
+            <div class="chart" id="weekly"></div>
+          </section>
+        </div>
+
+        <aside class="side-col">
+          <section class="panel quick">
+            <h2 class="h2">Quick add</h2>
+            <div class="tabs" role="tablist" aria-label="Quick add">
+              <button class="tab" role="tab" type="button" aria-selected="true" aria-controls="lead-form" id="tab-lead">Lead</button>
+              <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="amb-form" id="tab-amb">Ambassador</button>
+              <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="redeem-form" id="tab-redeem">Credit used</button>
+            </div>
+
+            <form class="form" id="lead-form" role="tabpanel" aria-labelledby="tab-lead">
+              <label class="field">Lead (first name and last initial)
+                <input class="input" name="name" required maxlength="60" placeholder="Mike R.">
+              </label>
+              <label class="field">Referred by
+                <select class="input amb-select" name="ambassadorId" required></select>
+              </label>
+              <div class="row2">
+                <label class="field">Date referred
+                  <input class="input today" type="date" name="date" required>
+                </label>
+                <label class="field">Interested in
+                  <select class="input" name="service">
+                    <option>TRT</option><option>HRT</option><option>GLP-1</option><option>Not sure</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field">Stage
+                <select class="input" name="stage">
+                  <option>New</option><option>Booked labs</option><option>Labs done</option><option>Recurring member</option><option>Lost</option>
+                </select>
+              </label>
+              <button class="btn" type="submit">Add lead</button>
+            </form>
+
+            <form class="form" id="amb-form" role="tabpanel" aria-labelledby="tab-amb" hidden>
+              <label class="field">Name
+                <input class="input" name="name" required maxlength="60">
+              </label>
+              <div class="row2">
+                <label class="field">Type
+                  <select class="input" name="type">
+                    <option>Trainer</option><option>Instructor</option><option>Influencer</option><option>Client</option><option>Other</option>
+                  </select>
+                </label>
+                <label class="field">Status
+                  <select class="input" name="status">
+                    <option>Prospect</option><option>Contacted</option><option>Onboarded</option><option>Active</option><option>Inactive</option>
+                  </select>
+                </label>
+              </div>
+              <div class="row2">
+                <label class="field">Referral code
+                  <input class="input" name="code" maxlength="30" placeholder="COACHJEN">
+                </label>
+                <label class="field">Instagram or phone
+                  <input class="input" name="contact" maxlength="60">
+                </label>
+              </div>
+              <label class="field">Date joined
+                <input class="input today" type="date" name="joined">
+              </label>
+              <button class="btn" type="submit">Add ambassador</button>
+            </form>
+
+            <form class="form" id="redeem-form" role="tabpanel" aria-labelledby="tab-redeem" hidden>
+              <label class="field">Ambassador
+                <select class="input amb-select" name="id" required></select>
+              </label>
+              <label class="field">Credit used ($)
+                <input class="input" type="number" name="amount" min="1" step="1" required>
+              </label>
+              <button class="btn" type="submit">Log credit used</button>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2 class="h2">Funnel</h2>
+            <p class="sub">How far every lead has gotten</p>
+            <div id="funnel"></div>
+          </section>
+
+          <section class="panel rules">
+            <h2 class="h2">How credits work</h2>
+            <ul class="rules-list">
+              <li><b>Referral bonus:</b> $100 each for the first 2 recurring referrals, $150 each after that. It's earned after the client's second paid month.</li>
+              <li><b>Monthly credit:</b> $10 for every full month each referral stays recurring. It stops when the lead is marked Cancelled.</li>
+              <li><b>Tiers:</b> Insider at 1–2 recurring referrals, Ambassador at 3–9, Elite at 10+ (protocol free).</li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+
+      <footer class="footer">Saved to your Google Sheet as you go.</footer>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
