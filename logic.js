@@ -2,6 +2,7 @@
 (function (root) {
   const GOAL = 500;
   const MONTHLY_CREDIT = 10;
+  const REFERRAL_BONUS = 50;
   const STATUSES = ['Prospect', 'Contacted', 'Onboarded', 'Active', 'Inactive'];
   const STAGES = ['New', 'Booked labs', 'Labs done', 'Recurring member', 'Cancelled', 'Lost'];
   const CONVERTED = ['Recurring member', 'Cancelled'];
@@ -24,11 +25,9 @@
     return Math.max(0, (b[0] - a[0]) * 12 + (b[1] - a[1]) - (b[2] < a[2] ? 1 : 0));
   }
 
-  // $100 for each of the first 2 recurring referrals, $150 for each after that.
+  // $50 for each referral that becomes a recurring member.
   function referralBonus(n) {
-    let s = 0;
-    for (let i = 1; i <= n; i++) s += i <= 2 ? 100 : 150;
-    return s;
+    return Math.max(0, n) * REFERRAL_BONUS;
   }
 
   function tierFor(n) {
@@ -121,7 +120,7 @@
   }
 
   const api = {
-    GOAL: GOAL, MONTHLY_CREDIT: MONTHLY_CREDIT, STATUSES: STATUSES, STAGES: STAGES,
+    GOAL: GOAL, MONTHLY_CREDIT: MONTHLY_CREDIT, REFERRAL_BONUS: REFERRAL_BONUS, STATUSES: STATUSES, STAGES: STAGES,
     todayStr: todayStr, fullMonths: fullMonths, referralBonus: referralBonus, tierFor: tierFor,
     computeBoard: computeBoard, computeTotals: computeTotals, computeWeekly: computeWeekly, computeFunnel: computeFunnel,
   };
